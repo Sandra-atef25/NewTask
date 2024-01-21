@@ -2,27 +2,43 @@ import {Text,View,ScrollView,Image} from "react-native";
 import { ItemData, MoviesProps } from "../../../Models/Movies";
 import styles from "../../../UIStyling/MoviesAndTVStyling/MoviesAndTvDetailsScreen";
 import Title from "../../../Components/Title";
-import { useLayoutEffect } from "react";
-import { movies,movieGenres } from "../../../Data/mocks";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { fetchMoviesGenres, fetchMoviesList } from "../../../util/http";
+
 function DetailsMoviesScreen({route,navigation}){
       
     const MovieDetails:MoviesProps =route.params.MoviesDetails;
-   /* navigation.setOption({
-        headerTitle:MovieDetails.title
-    })*/
+    const page:Number=route.params.page;
+    const [fetchedMovies,setFetchedMovies]=useState<MoviesProps[]>();
+    const [isFteching,setIsFetchingMovies]=useState(true);
+    const [fetchedGenres,setFetchedGenres]=useState<ItemData[]>();
     const BASE_URL_IMAGE="https://image.tmdb.org/t/p/original";
     const posterPathNew:string=BASE_URL_IMAGE+MovieDetails.poster_path.toString();
-    
+    async function getMoviesList() {
+        setIsFetchingMovies(true);
+        const moviesList = await fetchMoviesList(page);
+        console.log(moviesList);
+        setFetchedMovies(moviesList);
+        setIsFetchingMovies(false);
+    }
+    useEffect(() => {
+        getMoviesList();
+    }, [page]);
+    useEffect(() => {
+        async function getMoviesGenresList() {
+            const moviesGenresList = await fetchMoviesGenres();
+           setFetchedGenres(moviesGenresList);
+            
+        }
+        getMoviesGenresList();
+    }, []);
     useLayoutEffect(()=>{
-        const Movietitle = movies.find(
-            (movie) => movie.id=== MovieDetails.id
-          ).title;
-   
+       
         navigation.setOptions({ 
-            title:Movietitle,
+            title:MovieDetails.title,
         });
     },[navigation,MovieDetails]);
-    const matchingGenres=movieGenres.filter((genre)=>MovieDetails.genre_ids.includes(genre.id))
+    const matchingGenres=fetchedGenres.filter((genre)=>MovieDetails.genre_ids.includes(genre.id))
     
     
     return (
