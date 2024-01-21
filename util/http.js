@@ -9,13 +9,13 @@ const instance = axios.create({
     api_key: AUTH_TOKEN,
   },
 });
+const baseOptions = instance.defaults.params;
 //setting axios defults
 //axios.defaults.baseURL=BASE_URL;
 //axios.defaults.headers.common['Authorization']=AUTH_TOKEN;
 export async function fetchMoviesGenres() {
   //axios.get('genre/movie/list');
   const response = await instance.get("genre/movie/list");
-  console.log(response.data);
   const movieGenreObj = {
     genres: response.data.genres,
   };
@@ -26,8 +26,6 @@ export async function fetchMoviesGenres() {
 export async function fetchTVGenres() {
   //axios.get('genre/movie/list');
   const response = await instance.get("genre/tv/list");
-
-  console.log(response.data);
 
   const genreTvObj = {
     genres: response.data.genres,
@@ -50,7 +48,6 @@ export async function fetchMoviesListFiltering(page,with_genres) {
       total_pages: response.data.total_pages,
       total_results: response.data.total_results,
     };
-    console.log(response.data);
     return movieObj.results;
   }
 
@@ -59,6 +56,7 @@ export async function fetchMoviesList(page) {
   const response = await instance.get("discover/movie",{
     params:{
         page:page,
+
     }
   });
 
@@ -68,13 +66,33 @@ export async function fetchMoviesList(page) {
     total_pages: response.data.total_pages,
     total_results: response.data.total_results,
   };
-  console.log(response.data);
   return movieObj.results;
 }
-
-export async function fetchTVList() {
+export async function fetchTVListFiltering(page,with_genres) {
+    //axios.get('genre/movie/list');
+    const response = await instance.get("discover/tv",{
+      params:{
+          page:page,
+          with_genres:with_genres,
+      }
+    });
+  
+    const tvObj = {
+      page: response.data.page,
+      results: response.data.results,
+      total_pages: response.data.total_pages,
+      total_results: response.data.total_results,
+    };
+  
+    return tvObj.results;
+  }
+export async function fetchTVList(page) {
   //axios.get('genre/movie/list');
-  const response = await instance.get("discover/tv");
+  const response = await instance.get("discover/tv",{
+    params:{
+        page:page,
+    }
+  });
 
   const tvObj = {
     page: response.data.page,
@@ -87,10 +105,9 @@ export async function fetchTVList() {
 }
 
 export async function searchMovies(page,searchText){
-    const response=await axios.get("search/movie",{
-        baseURL:BASE_URL,
+    const response=await instance.get("search/movie",{
         params:{
-            api_key: AUTH_TOKEN,
+            ...baseOptions,
             query:searchText,
             page: page,
         }
@@ -98,11 +115,11 @@ export async function searchMovies(page,searchText){
 
     return response.data.results;
 }
-export async function searchTV(searchText,page){
-    const response=await axios.get("search/tv",{
-        baseURL:BASE_URL,
+export async function searchTV(page,searchText){
+    const response=await instance.get("search/tv",{
+        
         params:{
-            api_key: AUTH_TOKEN,
+            ...baseOptions,
             query:searchText,
             page: page,
         }

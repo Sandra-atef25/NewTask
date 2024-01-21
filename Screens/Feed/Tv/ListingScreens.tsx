@@ -1,10 +1,12 @@
-import { Text, View, FlatList, TouchableOpacity, Dimensions, TextInput, Pressable, Keyboard,Button} from "react-native";
+import { Text, View, FlatList, TouchableOpacity, TextInput, Keyboard,Button} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { series } from "../../../Data/mocks";
 import { seriesGenres } from "../../../Data/mocks";
 import { ItemData, TvProps } from '../../../Models/Tv';
 import styles from '../../../UIStyling/MoviesAndTVStyling/MoviesAndTVScreenStyling';
+import { fetchTVGenres, fetchTVList, fetchTVListFiltering, searchTV } from "../../../util/http";
+import LoadingOverlay from "../../../UIStyling/MoviesAndTVStyling/LoadingOverlay";
 
 type listofTvseries = {
     tvList: TvProps;
@@ -40,30 +42,46 @@ const TVSeriesList = ({ tvList, onPress }: listofTvseries) => {
     );
 };
 const ListingTVScreen = ({ navigation }) => {
+    //setting Search tesxt to see the matching movies in search text
+    const [searchText, setSearchText] = useState<string>("");
 
-    const [selectedId, setSelectedId] = useState<number[]>([]);
-    const [selectedTVSeries, setSelectedTVSeries] = useState<TvProps[]>([]);
-    const [searchText, setsearchText] = useState<string>("");
+    //clicked to appear clear search in textinput
     const [clicked, setClicked] = useState<boolean>(false);
+
+    //searched to see the text is searched (button searched is clicked on so we use another api)or not 
+    const [searched, setSearched] = useState(false);
+
+    //set and fetch the tv genres from the given Api
+    const [fetchedTvGenres, setTvGenres] = useState<ItemData[]>([]);
+
+    //set and fetch the series of tv from the given Api
+    const [fetchedSeries, setFetchedSeries] = useState<TvProps[]>([]);
+
+    //is fetching to handle loading overlay while fetching from the backend
+    const [isFetchingSeries, setIsFetchingSeries] = useState(true);
+
+    //to chcek if there is no matching series in the given searchtext
+    const [noMatchingSeries,setNoMatchingSeries]=useState(false);
+
+    //for pagination
+    const [page, setPageNumber] = useState(1);
+    const [isEnded,setIsEnded]=useState(false);
+
+    //filtering 
+    const [genreFilter, setGenreFilter] = useState<Number[]>([]);
+
     const renderItem = ({ item }: { item: ItemData }) => {
-        const backgroundColor = selectedId.includes(item.id) ? 'darkblue' : 'lightblue';
-        const color = selectedId.includes(item.id) ? 'white' : 'black';
+        const backgroundColor = genreFilter.includes(item.id) ? 'darkblue' : 'lightblue';
+        const color = genreFilter.includes(item.id) ? 'white' : 'black';
 
         const pressHandle = (item: ItemData) => {
-            //prevList
-            // if prevList includes item.id -> remove item.id
-            // else add item.id
-            setSelectedId((prevList) => {
+            handleGenreFilter();
+            setGenreFilter((prevList) => {
                 return prevList.includes(item.id) ? prevList.filter((id) => id !== item.id) : [...prevList, item.id]
-            });
+            }
+            );
         };
-        /* useEffect(() => {
-             async function getExpenses() {
-               const moviesGenresList = await fetchMoviesGenres();
-               console.log(moviesGenresList)
-             }
-             getExpenses();
-           }, []);*/
+
         return (
             <Item
                 item={item}
@@ -73,53 +91,7 @@ const ListingTVScreen = ({ navigation }) => {
             />
         );
     };
-    useEffect(() => {
-        console.log(selectedId);
-        if (selectedId.length == 0) {
-            if (searchText.trim().length == 0) {
-                setSelectedTVSeries(series);
-            }
-            else {
-                const searchMovies = series.filter((item) => item.name.toLowerCase().startsWith(searchText.trim().toLowerCase()));
-                setSelectedTVSeries(searchMovies);
-            }
-
-        }
-        else {
-            //check if more than an id is selected so
-            // return all tv series including in his genres ids thoses selected id 
-            const matchingTVSeries = series.filter((tvseries) =>
-                selectedId.every((genreID) => tvseries.genre_ids.includes(genreID)));
-            if (searchText.trim().length === 0) {
-
-                setSelectedTVSeries(matchingTVSeries);
-            }
-            else {
-                const searchTvSeries = matchingTVSeries.filter((item) => item.name.toLowerCase().startsWith(searchText.trim().toLowerCase()));
-                if (searchTvSeries.length == 0) {
-                    setSelectedTVSeries(matchingTVSeries);
-                }
-                else {
-                    setSelectedTVSeries(searchTvSeries);
-                }
-            }
-            console.log(matchingTVSeries);
-        }
-        /*
-                setSelectedMovies(movies.filter((item) => selectedId.some((id) => item.genre_ids.includes(id))));
-                if (searchText.trim() !== "" && selectedId.length !== 0) {
-                    
-                    const checkmovies = nextmovies.filter((item) => selectedMovies.filter((mo) => (mo.id !== item.id)));
-                    setSelectedMovies(selectedMovies.concat(checkmovies));
-                }
-                else if (searchText.trim() !== "" && selectedId.length == 0) {
-                    const nextmovies = movies.filter((item) => item.title.toLowerCase().startsWith(searchText.toLowerCase()));
-                    setSelectedMovies(nextmovies);
-                }
-        */
-    }, [selectedId, searchText]);
-
-    const renderMovies = ({ item: tvSeries }: { item: TvProps }) => {
+    const renderSeries = ({ item: tvSeries }: { item: TvProps }) => {
         const pressHandle = () => {
             navigation.navigate("SeriesDetails", { SeriesDetails: tvSeries });
         };
@@ -130,36 +102,203 @@ const ListingTVScreen = ({ navigation }) => {
         );
     };
 
+    //http requests for getting Tv Genres////////
+    useEffect(() => {
+        async function getSeriesGenresList() {
+            const seriesGenresList = await fetchTVGenres();
+            setTvGenres(seriesGenresList);
+
+        }
+        getSeriesGenresList();
+    }, []);
+    //http request for getting series list //
+    async function getSeriesList() {
+        setIsFetchingSeries(true);
+        const seriesList = await fetchTVList(page);
+        console.log(seriesList);
+        //if there is a no data in series list  so consider it the end of flat list
+        if(seriesList.length==0)
+        {
+            setIsEnded(true);
+        }
+        else{
+            const filtered= seriesList.filter((newItem:TvProps)=>!fetchedSeries.some((item:TvProps)=>item.id===newItem.id));
+               
+            setFetchedSeries((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+        }
+        setIsFetchingSeries(false);
+    }
+
+    //http request for new Series list by filtering//
+    async function getSeriesListFiltering() {
+        setIsFetchingSeries(true);
+        console.log(genreFilter);
+        const seriesListFiltered = await fetchTVListFiltering(page, genreFilter.join(","));
+        //console.log(moviesListFiltered);
+        if(seriesListFiltered.length==0)
+        {
+            setIsEnded(true);
+        }
+        else{
+            const filtered= seriesListFiltered.filter((newItem:TvProps)=>!fetchedSeries.some((item:TvProps)=>item.id===newItem.id));
+               
+            setFetchedSeries((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+        }
+        setIsFetchingSeries(false);
+
+    }
+
+    ///http request for searching//////
+
+    async function getSearchSeriesList() {
+        setIsFetchingSeries(true);
+        const searchSeriesList = await searchTV(page, searchText.trim());
+        console.log(searchSeriesList);
+        if(searchSeriesList.length==0){
+            setIsFetchingSeries(false);
+            setNoMatchingSeries(true);
+            setIsEnded(true);
+        }
+        else{
+            const filtered= searchSeriesList.filter((newItem:TvProps)=>!fetchedSeries.some((item:TvProps)=>item.id===newItem.id));
+               
+            setFetchedSeries((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+            setIsFetchingSeries(false);
+            setNoMatchingSeries(false);
+        }
+        
+
+    }
+    //it is rendered anyway and once anything of dependency list gets updated so it is rendered again
+    useEffect(()=>{
+        //in case of searching
+        
+        if(searched){
+            if(searchText.trim().length==0){
+                getSeriesList();
+            }
+            else{
+                getSearchSeriesList();
+            }
+            
+        }
+        //in case of filtering
+        else if(genreFilter.length!=0){
+            getSeriesListFiltering();
+        }
+        //in case of nothing
+        else{
+            getSeriesList();
+        }
+    },[page,searchText,genreFilter]);
+
+    ////handling functions
+
+    const handleSearch = () => {
+        //reset the genre filter and enable searched state and reset the page number
+        setGenreFilter([]);
+        setPageNumber(1);
+        setSearched(true);
+    }
+
+    const handleClearSearch = () => {
+        //reset searchQuery and page number clearing search
+        setClicked(false);
+        setSearchText('');
+        setPageNumber(1);
+        setSearched(false);
+
+    }
+    const handleGenreFilter = () => {
+        // reset searchQuery and page number 
+        setSearchText('');
+        setPageNumber(1);
+    }
+    const handleClearFilter = () => {
+        //reset genrefilter and page number
+        setGenreFilter([]);
+        setPageNumber(1);
+    }
+    const handleEndReached = () => {
+        setIsEnded(true);
+        if(!isFetchingSeries){
+            setPageNumber(page+1);
+        }
+        
+
+    }
+
     return (
         <View style={styles.container}>
-            <View style={clicked?styles.textClicked:styles.textUnclicked}>
-                <Ionicons name='search' size={20} color='navy' style={styles.icon}></Ionicons>
-                <TextInput value={searchText} onChangeText={setsearchText} style = {styles.textin}
-                    onFocus={() => { setClicked(true); }} onBlur={()=>{setClicked(false)}}/>
-                {
-                    clicked && (
-                        <View >
-                            <Button
-                            title="Cancel"
-                            onPress={() => {
-                                Keyboard.dismiss();
-                                setClicked(false);
-                            }}
-                            
-                        ></Button>
+            <Button title="Search" onPress={handleSearch} />
+
+            {
+                searched &&
+                <View style={clicked ? styles.textClicked : styles.textUnclicked}>
+                    <Ionicons name='search' size={20} color='navy' style={styles.icon}></Ionicons>
+
+                    <TextInput value={searchText} onChangeText={setSearchText} style={styles.textin}
+                        onFocus={() => setClicked(true)} onBlur={() => setClicked(false)} />
+
+                    {
+                        clicked &&
+                        <View>
+
+                            <Button title="Clear Search" onPress={handleClearSearch} />
+
                         </View>
-                    )
-                }
-            </View>
-            <View style={styles.ItemContainer}>
-                <FlatList<any> data={seriesGenres} renderItem={renderItem} keyExtractor={item => item.id} horizontal={true} style={styles.ItemsContainers} pagingEnabled={true}
+                    }
+                </View>
+            }
+
+            {
+                !searched && genreFilter &&
+                (<View>
+
+                    <Button title="Clear Filter" onPress={handleClearFilter} />
+                </View>)
+            }
+            {
+                !searched &&
+                <View style={styles.ItemContainer}>
+                <FlatList<any> data={fetchedTvGenres} renderItem={renderItem} keyExtractor={item => item.id} horizontal={true} style={styles.ItemsContainers}
                     showsHorizontalScrollIndicator={false}
                     legacyImplementation={false} >
                 </FlatList>
             </View>
+            }
             <View style={styles.moviesContainer}>
-                <FlatList<any> data={selectedTVSeries} renderItem={renderMovies} keyExtractor={(item) => item.id} numColumns={2} ></FlatList>
+            {
+                !isEnded&&isFetchingSeries&&!noMatchingSeries&&<LoadingOverlay/>
+            }
+            {
+                !isFetchingSeries&& !noMatchingSeries&& 
+                
+                <FlatList<any> data={fetchedSeries} renderItem={renderSeries} keyExtractor={(item) => item.id} numColumns={2}
+                    onEndReached={handleEndReached} ListFooterComponent={
+                        isFetchingSeries&&isEnded?<LoadingOverlay/>:null
+                    } ></FlatList>
+
+            
+            }
+            {
+                !isFetchingSeries&&noMatchingSeries&&
+                <View>
+                    <Text> No Matching Movies</Text>
+                </View>
+            }
             </View>
+           
+            
         </View>
     );
 };

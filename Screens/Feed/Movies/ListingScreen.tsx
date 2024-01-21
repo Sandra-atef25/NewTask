@@ -1,10 +1,11 @@
-import { Text, View, FlatList, TouchableOpacity, TextInput,  Button } from "react-native";
+import { Text, View, FlatList, TouchableOpacity, TextInput, Button } from "react-native";
 import styles from "../../../UIStyling/MoviesAndTVStyling/MoviesAndTVScreenStyling";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { ItemData, MoviesProps } from '../../../Models/Movies';
 import { fetchMoviesGenres, fetchMoviesList, fetchMoviesListFiltering, searchMovies } from "../../../util/http";
 import LoadingOverlay from "../../../UIStyling/MoviesAndTVStyling/LoadingOverlay";
+
 
 type listOfMovies = {
     moviesL: MoviesProps;
@@ -34,7 +35,7 @@ const MoviesList = ({ moviesL, onPress }: listOfMovies) => {
                     <Text style={[styles.Itemtext, { color: 'red' }]}>
                         {moviesL.title}
                     </Text>
-                   
+
                 </Text>
             </View>
         </TouchableOpacity>
@@ -43,20 +44,22 @@ const MoviesList = ({ moviesL, onPress }: listOfMovies) => {
 const ListingMoviesScreen = ({ navigation }) => {
     //const [selectedId, setSelectedId] = useState<number[]>([]);
     //const [selectedMovies, setSelectedMovies] = useState<MoviesProps[]>([]);
+    
     const [searchText, setSearchText] = useState<string>("");
     const [clicked, setClicked] = useState<boolean>(false);
-
+    const [searched, setSearched] = useState(false);
     const [fetchedMoviesGenres, setMoviesGenres] = useState<ItemData[]>([]);
     const [fetchedMovies, setFetchedMovies] = useState<MoviesProps[]>([]);
 
     const [isFetchingMovies, setIsFetchingMovies] = useState(true);
-    const [isFetchingGenres, setIsFetchingGenres] = useState(true);
-    const [searched,setSearch]=useState(false);
+    const [noMatchingMovie,setNoMatchingMovie]=useState(false);
     //for pagination
     const [page, setPageNumber] = useState(1);
+    const [pagination,setPagination]=useState<Number[]>([page]);
+    const [isEnded,setIsEnded]=useState(false);
     //filtering 
     const [genreFilter, setGenreFilter] = useState<Number[]>([]);
-   
+
     const renderItem = ({ item }: { item: ItemData }) => {
         const backgroundColor = genreFilter.includes(item.id) ? 'darkblue' : 'lightblue';
         const color = genreFilter.includes(item.id) ? 'white' : 'black';
@@ -69,12 +72,12 @@ const ListingMoviesScreen = ({ navigation }) => {
                 return prevList.includes(item.id) ? prevList.filter((id) => id !== item.id) : [...prevList, item.id]
             });
             */
+            handleGenreFilter();
+
             setGenreFilter((prevList) => {
                 return prevList.includes(item.id) ? prevList.filter((id) => id !== item.id) : [...prevList, item.id]
             }
             );
-            console.log(genreFilter);
-            handleGenreFilter();
         };
 
         return (
@@ -96,63 +99,12 @@ const ListingMoviesScreen = ({ navigation }) => {
             />
         );
     };
-    /*
-    useEffect(() => {
-        console.log(selectedId);
-        if (selectedId.length == 0) {
-            if (searchText.trim().length == 0) {
-                setSelectedMovies(fetchedMovies);
-            }
-            else {
-                const searchMovies = fetchedMovies.filter((item) => item.title.toLowerCase().startsWith(searchText.trim().toLowerCase()));
-                setSelectedMovies(searchMovies);
-            }
-
-        }
-
-        else {
-            //check if more than an id is selected so
-            // return all movies including in his genres ids thoses selected id 
-            const matchingMovies = fetchedMovies.filter((movie) =>
-                selectedId.every((genreID) => movie.genre_ids.includes(genreID)));
-            if (searchText.trim().length === 0) {
-
-                setSelectedMovies(matchingMovies);
-            }
-            else {
-                const searchMovies = matchingMovies.filter((item) => item.title.toLowerCase().startsWith(searchText.trim().toLowerCase()));
-                if (searchMovies.length == 0) {
-                    setSelectedMovies(matchingMovies);
-                }
-                else {
-                    setSelectedMovies(searchMovies);
-                }
-            }
-            console.log(matchingMovies);
-        }
-        /*
-                setSelectedMovies(movies.filter((item) => selectedId.some((id) => item.genre_ids.includes(id))));
-                if (searchText.trim() !== "" && selectedId.length !== 0) {
-                    
-                    const checkmovies = nextmovies.filter((item) => selectedMovies.filter((mo) => (mo.id !== item.id)));
-                    setSelectedMovies(selectedMovies.concat(checkmovies));
-                }
-                else if (searchText.trim() !== "" && selectedId.length == 0) {
-                    const nextmovies = movies.filter((item) => item.title.toLowerCase().startsWith(searchText.toLowerCase()));
-                    setSelectedMovies(nextmovies);
-                }
-        
-    }, [selectedId, searchText]);
-
-    */
     //http requests for getting movies Genres////////
     useEffect(() => {
         async function getMoviesGenresList() {
             const moviesGenresList = await fetchMoviesGenres();
-            setIsFetchingGenres(true);
-
             setMoviesGenres(moviesGenresList);
-            setIsFetchingGenres(false);
+
         }
         getMoviesGenresList();
     }, []);
@@ -161,134 +113,197 @@ const ListingMoviesScreen = ({ navigation }) => {
         setIsFetchingMovies(true);
         const moviesList = await fetchMoviesList(page);
         console.log(moviesList);
-        setFetchedMovies(moviesList);
+        
+        if(moviesList.length==0)
+        {
+            setIsEnded(false);
+        }
+        else{
+            const filtered= moviesList.filter((neitem:MoviesProps)=>!fetchedMovies.some((item:MoviesProps)=>item.id===neitem.id));
+               
+            setFetchedMovies((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+        }
         setIsFetchingMovies(false);
     }
-    useEffect(() => {
-        getMoviesList();
-    }, [page]);
+
     //http request for new movies list by filtering//
     async function getMoviesListFiltering() {
         setIsFetchingMovies(true);
+        console.log(genreFilter);
         const moviesListFiltered = await fetchMoviesListFiltering(page, genreFilter.join(","));
-        console.log(moviesListFiltered);
-        setFetchedMovies(moviesListFiltered);
+        //console.log(moviesListFiltered);
+        if(moviesListFiltered.length==0)
+        {
+            setIsEnded(false);
+        }
+        else{
+            const filtered= moviesListFiltered.filter((neitem:MoviesProps)=>!fetchedMovies.some((item:MoviesProps)=>item.id===neitem.id));
+               
+            setFetchedMovies((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+        }
         setIsFetchingMovies(false);
+
     }
-    useEffect(() => {
-        getMoviesListFiltering();
-    }, [page, genreFilter]);
+
     ///http request for searching//////
-    
+
     async function getSearchMoviesList() {
         setIsFetchingMovies(true);
-        const searchMoviesList = await searchMovies(page, searchText.toString());
-        console.log(searchMoviesList);  
-        setFetchedMovies(searchMoviesList);
-        setIsFetchingMovies(false);
+        const searchMoviesList = await searchMovies(page, searchText.trim());
+        console.log(searchMoviesList);
+        if(searchMoviesList.length==0){
+            setIsFetchingMovies(false);
+            setNoMatchingMovie(true);
+            setIsEnded(false);
+        }
+        else{
+            const filtered= searchMoviesList.filter((neitem:MoviesProps)=>!fetchedMovies.some((item:MoviesProps)=>item.id===neitem.id));
+               
+            setFetchedMovies((prevList)=>
+            {
+               return[...prevList,...filtered];
+            })
+            setIsFetchingMovies(false);
+            setNoMatchingMovie(false);
+        }
         
-        
-       
+
     }
-    useEffect(() => {
-        getSearchMoviesList();
-    }, [page,searchText]);
-    
+    //it is rendered anyway and once anything of dependency list gets updated so it is rendered again
+    useEffect(()=>{
+        //in case of searching
+        
+        if(searched){
+            if(searchText.trim().length==0){
+                getMoviesList();
+            }
+            else{
+                getSearchMoviesList();
+            }
+            
+        }
+        //in case of filtering
+        else if(genreFilter.length!=0){
+            getMoviesListFiltering();
+        }
+        //in case of nothing
+        else{
+            getMoviesList();
+        }
+    },[page,searchText,genreFilter]);
+
     ////handling functions
 
     const handleSearch = () => {
-        setSearchText(searchText);
-        setGenreFilter(null);
+        setGenreFilter([]);
         setPageNumber(1);
-        if(searchText.trim().length==0){
-            getMoviesList();
-        }
-        else {
-            getSearchMoviesList();
-        }
+        setSearched(true);
     }
 
     const handleClearSearch = () => {
+        //reset searchQuery and page number clearing search
+        setClicked(false);
         setSearchText('');
         setPageNumber(1);
-        setSearch(false);
-        setClicked(false);
-        getMoviesList();
+        setSearched(false);
+
     }
     const handleGenreFilter = () => {
-        // reset searchQuery and page number
+        // reset searchQuery and page number 
         setSearchText('');
         setPageNumber(1);
-        getMoviesListFiltering();
     }
-    const handleClearFilter=()=>{
+    const handleClearFilter = () => {
+        //reset genrefilter and page number
         setGenreFilter([]);
         setPageNumber(1);
-        getMoviesList();
     }
     const handleEndReached = () => {
-        setPageNumber(page + 1);
+        setIsEnded(true);
+        if(!isFetchingMovies){
+            setPageNumber(page+1);
+        }
+        
 
     }
-
-    if (isFetchingMovies) {
-        return <LoadingOverlay />;
-    }
-
 
     return (
         <View style={styles.container}>
-            <View style={clicked?styles.textClicked:styles.textUnclicked}>
-                <Ionicons name='search' size={20} color='navy' style={styles.icon}></Ionicons>
-                <TextInput value={searchText} style={styles.textin}
-                    onFocus={() => { setClicked(true); }} onBlur={() => { setClicked(false) }} />
-                <View>
+            <Button title="Search" onPress={handleSearch} />
+
+            {
+                searched &&
+                <View style={clicked ? styles.textClicked : styles.textUnclicked}>
+                    <Ionicons name='search' size={20} color='navy' style={styles.icon}></Ionicons>
+
+                    <TextInput value={searchText} onChangeText={setSearchText} style={styles.textin}
+                        onFocus={() => setClicked(true)} onBlur={() => setClicked(false)} />
+
                     {
                         clicked &&
                         <View>
-                            <Button title="Search" onPress={handleSearch} />
+
                             <Button title="Clear Search" onPress={handleClearSearch} />
-                
-                            </View>
-                    }
-                
-                </View>
-                {
-                    genreFilter &&
-                    (<View>
-                        
-                        <Button title="Clear Filter" onPress={handleClearFilter} />
-                    </View>)
-                }
 
-                {/*
-                    clicked && (
-                        <View >
-                            <Button
-                                title="Cancel"
-                                onPress={() => {
-                                    Keyboard.dismiss();
-                                    setClicked(false);
-                                }}
-
-                            ></Button>
                         </View>
-                    )
-                            */}
-            </View>
-            <View style={styles.ItemContainer}>
+                    }
+
+
+
+
+                </View>
+            }
+
+            {
+                !searched && genreFilter &&
+                (<View>
+
+                    <Button title="Clear Filter" onPress={handleClearFilter} />
+                </View>)
+            }
+            {
+                !searched &&
+                <View style={styles.ItemContainer}>
                 <FlatList<any> data={fetchedMoviesGenres} renderItem={renderItem} keyExtractor={item => item.id} horizontal={true} style={styles.ItemsContainers}
                     showsHorizontalScrollIndicator={false}
                     legacyImplementation={false} >
                 </FlatList>
             </View>
+            }
             <View style={styles.moviesContainer}>
+            {
+                !isEnded&&isFetchingMovies&&!noMatchingMovie&&<LoadingOverlay/>
+            }
+            {
+                !isFetchingMovies&& !noMatchingMovie&& 
+                
                 <FlatList<any> data={fetchedMovies} renderItem={renderMovies} keyExtractor={(item) => item.id} numColumns={2}
-                    onEndReached={handleEndReached} onEndReachedThreshold={0.1}></FlatList>
+                    onEndReached={handleEndReached} ListFooterComponent={
+                        isFetchingMovies&&isEnded?<LoadingOverlay/>:null
+                    } ></FlatList>
+
+            
+            }
+            {
+                !isFetchingMovies &&noMatchingMovie&&
+                <View>
+                    <Text> No Matching Movies</Text>
+                </View>
+            }
             </View>
+           
+            
         </View>
     );
 };
 export default ListingMoviesScreen;
+
+
 
 

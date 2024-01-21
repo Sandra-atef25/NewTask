@@ -2,29 +2,38 @@ import {Text,View,ScrollView,Image} from "react-native";
 import { ItemData, MoviesProps } from "../../../Models/Movies";
 import styles from "../../../UIStyling/MoviesAndTVStyling/MoviesAndTvDetailsScreen";
 import Title from "../../../Components/Title";
-import { useLayoutEffect } from "react";
-import { movies,movieGenres } from "../../../Data/mocks";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { fetchMoviesGenres } from "../../../util/http";
+import LoadingOverlay from "../../../UIStyling/MoviesAndTVStyling/LoadingOverlay";
+
 function DetailsMoviesScreen({route,navigation}){
       
     const MovieDetails:MoviesProps =route.params.MoviesDetails;
-   /* navigation.setOption({
-        headerTitle:MovieDetails.title
-    })*/
+   
+    const [isFteching,setIsFetchingMovies]=useState(true);
+    const [fetchedGenres,setFetchedGenres]=useState<ItemData[]>();
     const BASE_URL_IMAGE="https://image.tmdb.org/t/p/original";
     const posterPathNew:string=BASE_URL_IMAGE+MovieDetails.poster_path.toString();
     
+
     useLayoutEffect(()=>{
-        const Movietitle = movies.find(
-            (movie) => movie.id=== MovieDetails.id
-          ).title;
-   
+        async function getMoviesGenresList() {
+            setIsFetchingMovies(true);
+            const moviesGenresList = await fetchMoviesGenres();
+            setIsFetchingMovies(false);
+           setFetchedGenres(moviesGenresList);
+            
+        }
+        getMoviesGenresList();
         navigation.setOptions({ 
-            title:Movietitle,
+            title:MovieDetails.title,
         });
     },[navigation,MovieDetails]);
-    const matchingGenres=movieGenres.filter((genre)=>MovieDetails.genre_ids.includes(genre.id))
-    
-    
+    const matchingGenres=fetchedGenres?.filter((genre)=>MovieDetails.genre_ids.includes(genre.id))
+    //console.log(fetchedGenres.every((item)=>MovieDetails.genre_ids.includes(item.id)));
+    if(isFteching){
+        return <LoadingOverlay/>
+    }
     return (
         <ScrollView style={styles.Container}>
             <View style={styles.NameofSelectedItem}>
@@ -35,25 +44,17 @@ function DetailsMoviesScreen({route,navigation}){
                 <Title TextIen="ID: " title ={MovieDetails.id}/>
                 <Title TextIen="Adult: "title={MovieDetails.adult.valueOf()?"True":"False"} />
                 <Title TextIen="Backdrop_Path: "title={MovieDetails.backdrop_path}/>
-                <Title TextIen="Genres_Ids: "title ={matchingGenres.map((genre)=>genre.name).toString()}/>
+                <Title TextIen="Genres_Ids: "title ={matchingGenres?.map((genre)=>genre.name).toString()}/>
                 <Title TextIen="Origin_Language: "title={MovieDetails.original_language}/>
                 <Title TextIen="Original_Title: "title={MovieDetails.original_title}/>
                 <Title TextIen="OverView: "title={MovieDetails.overview}/>
                 <Title TextIen="Popularity: "title={MovieDetails.popularity}/>
-                <Title TextIen="Poster_Path: "title={MovieDetails.poster_path}/>
                 <Title TextIen="Vote_Average: "title={MovieDetails.vote_average}/>
                 <Title TextIen="Vote_Count: "title={MovieDetails.vote_count}/>
                 <Title TextIen="Video: " title={MovieDetails.video.valueOf()?"True":"False"}/>
             </View>
             
         </ScrollView>
-    );
-    return (
-        <View>
-            <Text>
-                this is the details screen {MovieDetails.title}
-            </Text>
-        </View>
     );
 }
 export default DetailsMoviesScreen;
