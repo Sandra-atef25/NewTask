@@ -16,7 +16,7 @@ function DetailsMoviesScreen({route,navigation}){
     const posterPathNew:string=BASE_URL_IMAGE+MovieDetails.poster_path.toString();
     
 
-    useLayoutEffect(()=>{
+    useEffect(()=>{
         async function getMoviesGenresList() {
             setIsFetchingMovies(true);
             const moviesGenresList = await fetchMoviesGenres();
