@@ -1,18 +1,18 @@
 import { Button} from "react-native";
 import Welcome from "../../Components/WelcomeScreen";
-function NotificationsScreen({ navigation }) {
-  function onpresshandle() {
+const NotificationsScreen=({ navigation })=> {
+  const onPresshandle=()=> {
     navigation.navigate("NotificationsDetails");
-  }
+  };
   return (
     <Welcome>
         <Button
           title="Notifications Details"
-          onPress={onpresshandle}
+          onPress={onPresshandle}
           color="red"
         />
      </Welcome>
   );
-}
+};
 export default NotificationsScreen;
 

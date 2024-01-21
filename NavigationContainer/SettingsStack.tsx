@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SettingsDetails from "../Screens/Settings/SettingsDetails";
 import SettingsScreen from "../Screens/Settings/SettingsScreen";
 
-function SettingsStack() {
+const SettingsStack=() =>{
   const Stack = createNativeStackNavigator();
 
   return (
@@ -21,5 +21,5 @@ function SettingsStack() {
       />
     </Stack.Navigator>
   );
-}
+};
 export default SettingsStack;

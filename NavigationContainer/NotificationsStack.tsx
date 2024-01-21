@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NotificationsScreen from "../Screens/Notifications/NotificationsScreen";
 import NotificationsDetails from "../Screens/Notifications/NotificationsDetails";
 
-function NotificationsStack() {
+const NotificationsStack=() =>{
   const Stack = createNativeStackNavigator();
 
   return (
@@ -21,5 +21,5 @@ function NotificationsStack() {
       />
     </Stack.Navigator>
   );
-}
+};
 export default NotificationsStack;

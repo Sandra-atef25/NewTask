@@ -1,24 +1,41 @@
-import {Text,View,ScrollView,StyleSheet} from "react-native";
-import { MoviesProps } from "../../../Models/Movies";
-
+import {Text,View,ScrollView,Image} from "react-native";
+import { ItemData, MoviesProps } from "../../../Models/Movies";
+import styles from "../../../UIStyling/MoviesAndTVStyling/MoviesAndTvDetailsScreen";
 import Title from "../../../Components/Title";
-function DetailsMoviesScreen({route}){
+import { useLayoutEffect } from "react";
+import { movies,movieGenres } from "../../../Data/mocks";
+function DetailsMoviesScreen({route,navigation}){
       
     const MovieDetails:MoviesProps =route.params.MoviesDetails;
    /* navigation.setOption({
         headerTitle:MovieDetails.title
     })*/
+    const BASE_URL_IMAGE="https://image.tmdb.org/t/p/original";
+    const posterPathNew:string=BASE_URL_IMAGE+MovieDetails.poster_path.toString();
+    
+    useLayoutEffect(()=>{
+        const Movietitle = movies.find(
+            (movie) => movie.id=== MovieDetails.id
+          ).title;
+   
+        navigation.setOptions({ 
+            title:Movietitle,
+        });
+    },[navigation,MovieDetails]);
+    const matchingGenres=movieGenres.filter((genre)=>MovieDetails.genre_ids.includes(genre.id))
+    
+    
     return (
         <ScrollView style={styles.Container}>
             <View style={styles.NameofSelectedItem}>
                 <Text style={styles.TextName}>{MovieDetails.title}</Text>
             </View>
             <View style={styles.Details}>
-                
+            <Image source={{uri:posterPathNew}} style={{width:'100%',height:500}}></Image>
                 <Title TextIen="ID: " title ={MovieDetails.id}/>
                 <Title TextIen="Adult: "title={MovieDetails.adult.valueOf()?"True":"False"} />
                 <Title TextIen="Backdrop_Path: "title={MovieDetails.backdrop_path}/>
-                <Title TextIen="Genres_Ids: "title ={MovieDetails.genre_ids.toString()}/>
+                <Title TextIen="Genres_Ids: "title ={matchingGenres.map((genre)=>genre.name).toString()}/>
                 <Title TextIen="Origin_Language: "title={MovieDetails.original_language}/>
                 <Title TextIen="Original_Title: "title={MovieDetails.original_title}/>
                 <Title TextIen="OverView: "title={MovieDetails.overview}/>
@@ -40,25 +57,3 @@ function DetailsMoviesScreen({route}){
     );
 }
 export default DetailsMoviesScreen;
-const styles=StyleSheet.create({
-    Container:{
-        flex:1,
-        borderWidth:2,
-        margin:5,
-        backgroundColor:'pink',
-
-    },
-    NameofSelectedItem:{
-        alignItems:'center',
-        justifyContent:'center',
-    },
-    TextName:{
-        fontSize:20,
-        fontWeight:'bold',
-    },
-    Details:{
-        justifyContent:'space-around',
-        margin:5,
-        
-    }
-})

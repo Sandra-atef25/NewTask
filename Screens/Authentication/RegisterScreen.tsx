@@ -1,29 +1,29 @@
 import { TextInput, View, Button, Text, StyleSheet, Alert } from "react-native";
 import { useContext, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { styles } from "../../UIStyling/AuthenticationStyling/LoginAndRegisterStyling";
 import { UserName } from "../../Components/UsernameContext/UserContext";
-function RegisterScreen({ navigation }) {
+const RegisterScreen=({ navigation }) =>{
   //const navigation = useNavigation();
-  const [enteredname, setenteredname] = useState("");
+  const [enteredName, setEnteredName] = useState("");
   const user=useContext(UserName);//pass object used to create context in usecontext to be able to use all the things provided in it 
  
-  function PressHandler() {
-    if (enteredname.trim() === "") {
+  const pressHandler=()=> {
+    if (enteredName.trim() === "") {
       Alert.alert("Invalid Name ", "Name must not be empty", [
         { text: "Okay", style: "destructive" },
       ]);
       return;
     }
-    user.nameofuser=enteredname;
+    user.nameOfUser=enteredName;
     navigation.navigate("MainStackTwo");
-  }
-  function pressgobacklogin() {
+  };
+  const pressGoBackLogin=()=> {
     console.log("pressed goback login");
     navigation.navigate("Login");
-  }
-  function inputHandler(entername) {
-    setenteredname(entername);
-  }
+  };
+  const inputHandler=(enterName) =>{
+    setEnteredName(enterName);
+  };
   return (
     <View style={styles.Container}>
       <View style={styles.innercon}>
@@ -31,47 +31,19 @@ function RegisterScreen({ navigation }) {
         <TextInput
           placeholder="UserName"
           style={styles.texti}
-          value={enteredname}
+          value={enteredName}
           onChangeText={inputHandler}
         />
       </View>
       <View style={styles.innercon}>
         <View style={styles.buttonCon}>
-          <Button title="Register" onPress={PressHandler} color={"blue"} />
+          <Button title="Register" onPress={pressHandler} color={"blue"} />
         </View>
         <View style={styles.buttonCon}>
-          <Button title="Back" onPress={pressgobacklogin} color={"blue"} />
+          <Button title="Back" onPress={pressGoBackLogin} color={"blue"} />
         </View>
       </View>
     </View>
   );
-}
+};
 export default RegisterScreen;
-const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    paddingTop: "50%",
-    alignItems: "center",
-  },
-  innercon: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  texti: {
-    padding: 5,
-    marginLeft: 5,
-    borderWidth: 5,
-    borderColor: "lightblue",
-    opacity: 0.5,
-    fontSize: 20,
-    width: "50%",
-  },
-  textuser: {
-    marginRight: 5,
-    fontSize: 20,
-  },
-  buttonCon: {
-    flex: 1,
-    padding: 16,
-  },
-});

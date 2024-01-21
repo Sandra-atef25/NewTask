@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import { Button, View, StyleSheet, GestureResponderEvent } from "react-native";
-type propsbutton={
+type propsButton={
   children:ReactNode,
   onPress?( event:GestureResponderEvent) :void,
 }
-function PrimaryButton(props:propsbutton) {
+const PrimaryButton=(props:propsButton) =>{
   return (
     <View style={styles.container}>
       <View style={styles.buttoncon}>{props.children}</View>
@@ -13,7 +13,7 @@ function PrimaryButton(props:propsbutton) {
       </View>
     </View>
   );
-}
+};
 export default PrimaryButton;
 const styles = StyleSheet.create({
   container: {

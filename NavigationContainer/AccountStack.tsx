@@ -5,7 +5,7 @@ import AccountDetails from "../Screens/Account/AccountDetails";
 import AccountScreen from "../Screens/Account/AccountScreen";
 import AccountDetailsDetails from "../Screens/Account/AccountDoubleDetails";
 
-function AccountStack() {
+const AccountStack=() =>{
   const Stack = createNativeStackNavigator();
 
     return (
@@ -36,5 +36,5 @@ function AccountStack() {
         />
       </Stack.Navigator>
     );
-}
+};
 export default AccountStack;

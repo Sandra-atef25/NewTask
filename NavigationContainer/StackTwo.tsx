@@ -8,7 +8,7 @@ import SettingsStack from "./SettingsStack";
 
 import { Ionicons } from "@expo/vector-icons";
 
-function MainStackTwo() {
+const MainStackTwo=() =>{
   const Tab = createBottomTabNavigator();
 
   return (
@@ -77,5 +77,5 @@ function MainStackTwo() {
       />
     </Tab.Navigator>
   );
-}
+};
 export default MainStackTwo;

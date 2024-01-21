@@ -1,4 +1,4 @@
-//import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import FeedScreen from "../Screens/Feed/FeedScreen";
@@ -7,7 +7,7 @@ import FeedDetails from "../Screens/Feed/FeedDetails";
 import TVStack from "./FeedScreens/TvStack";
 import MoviesStack from "./FeedScreens/MoviesStack";
 
-function FeedStack() {
+const FeedStack=() =>{
   const MaterialTop = createMaterialTopTabNavigator();
 
   return (
@@ -28,5 +28,5 @@ function FeedStack() {
       </MaterialTop.Navigator>
    
   );
-}
+};
 export default FeedStack;

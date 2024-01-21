@@ -1,5 +1,5 @@
 import PrimaryButton from "../../Components/PrimaryButton";
-function AccountDetailsDetails({navigation}) {
+const AccountDetailsDetails=({navigation})=> {
   return (
     <PrimaryButton onPress={() => { navigation.goBack(); } } children={undefined}/>
   );

@@ -9,15 +9,18 @@ const styles = StyleSheet.create({
     },
     moviesContainer: {
         flex: 2,
-        alignContent: 'center'
+        alignItems:'center',
+        width:deviceWidth,
     },
     ItemContainer: {
         flex: 1,
-        borderWidth: 2,
+        padding:5,
+        borderBottomWidth:2,
+        justifyContent:'space-evenly',
         alignContent: "center",
     },
     ItemsContainers: {
-        padding: 6
+        margin:5
     },
     Itemtext: {
         fontSize: 14,
@@ -30,37 +33,54 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     TextContainer: {
-        margin: 10,
+        
         alignItems: 'center',
         justifyContent: 'center',
 
     },
     TextMoviesContainer: {
         flex: 1,
-        margin: 5,
+        padding:5,
         height: 200,
+        width:deviceWidth/2.25,
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        width: deviceWidth / 2.5,
         backgroundColor: 'pink',
         borderWidth: 2,
         opacity: 0.75
 
     },
-    searchbar: {
-        margin: 15,
-        borderWidth: 2,
-        borderRadius: 25,
-        width: '90%',
-        flexDirection: 'row'
-    },
     textin: {
-        marginLeft: 10,
+        width:'100%',
+        marginLeft: 5,
+        flexDirection:'row',
+        flex:1,
     },
     icon: {
         marginLeft: 5,
-    }
+    },
+    textUnclicked: {
+        padding: 10,
+        marginVertical:10,
+        marginHorizontal: 15,
+        flexDirection: "row",
+        //width: deviceWidth-5,
+        backgroundColor: "#d9dbda",
+        borderRadius: 15,
+        alignItems: "center",
+      },
+      textClicked: {
+        marginHorizontal:20,
+        marginVertical:10,
+        padding: 10,
+        flexDirection: "row",
+        backgroundColor: "#d9dbda",
+        borderRadius: 15,
+        alignItems: "center",
+        justifyContent:'space-between'
+      },
+    
 
 
 

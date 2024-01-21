@@ -1,15 +1,15 @@
 import {  Button } from "react-native";
 import Welcome from "../../Components/WelcomeScreen";
 
-function HomeScreen({ route, navigation }) {
+const HomeScreen=({ navigation }) =>{
   //const username = route.params.UserName;
-  function onpresshandle() {
+  const onPressHandle=() =>{
     navigation.navigate("HomeDetails");
-  }
+  };
   return (
     <Welcome>
-      <Button title="Home Details" onPress={onpresshandle} color="red" />
+      <Button title="Home Details" onPress={onPressHandle} color="red" />
     </Welcome>
   );
-}
+};
 export default HomeScreen;

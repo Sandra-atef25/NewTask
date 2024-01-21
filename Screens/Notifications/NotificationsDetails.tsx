@@ -1,16 +1,16 @@
 import { Button } from "react-native";
 import PrimaryButton from "../../Components/PrimaryButton";
-function NotificationsDetails({ navigation }) {
-  function pressgoback() {
+const NotificationsDetails=({ navigation }) =>{
+  const pressgoBack=() =>{
     navigation.goBack();
-  }
-  function pressnext() {
+  };
+  const pressNext=() =>{
     navigation.navigate("AccountDetails");
-  }
+  };
   return (
-    <PrimaryButton onPress={pressgoback}>
-      <Button title="Account Details" onPress={pressnext} color='blue'/>
+    <PrimaryButton onPress={pressgoBack}>
+      <Button title="Account Details" onPress={pressNext} color='blue'/>
     </PrimaryButton>
   );
-}
+};
 export default NotificationsDetails;

@@ -1,11 +1,10 @@
-import { Button,View } from "react-native";
 import PrimaryButton from "../../Components/PrimaryButton";
-function HomeDetails({navigation}){
-    function pressgoback(){
+const HomeDetails=({navigation})=>{
+    const pressGoBack=()=>{
         navigation.goBack();
-    }
+    };
     return (
-       <PrimaryButton onPress={pressgoback} children={undefined}/>
+       <PrimaryButton onPress={pressGoBack} children={undefined}/>
     );
-}
+};
 export default HomeDetails;

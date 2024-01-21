@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import RegisterScreen from "../Screens/Authentication/RegisterScreen";
 import LoginScreen from "../Screens/Authentication/LoginScreen";
-export default function MainStackAuthentication() {
+const MainStackAuthentication=()=> {
   const Stack = createNativeStackNavigator();
 
   return (
@@ -16,4 +16,5 @@ export default function MainStackAuthentication() {
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
-}
+};
+export default MainStackAuthentication;

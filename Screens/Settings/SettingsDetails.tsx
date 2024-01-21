@@ -1,16 +1,16 @@
 import { Button } from "react-native";
 import PrimaryButton from "../../Components/PrimaryButton";
-function SettingsDetails({ navigation }) {
-  function presslogout() {
+const SettingsDetails=({ navigation }) =>{
+  const pressLogOut=() =>{
     navigation.navigate("Login");
-  }
-  function pressgoback() {
+  };
+  const pressGoBack=()=> {
     navigation.goBack();
-  }
+  };
   return (
-    <PrimaryButton onPress={pressgoback}>
-      <Button title="Log Out" onPress={presslogout} color='blue' />
+    <PrimaryButton onPress={pressGoBack}>
+      <Button title="Log Out" onPress={pressLogOut} color='blue' />
     </PrimaryButton>
   );
-}
+};
 export default SettingsDetails;

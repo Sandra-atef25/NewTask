@@ -1,14 +1,14 @@
 import { Button } from "react-native";
 import Welcome from "../../Components/WelcomeScreen";
-function SettingsScreen({ navigation }) {
-  function onpresshandle() {
+const SettingsScreen=({ navigation }) =>{
+  const onPressHandle=() =>{
     navigation.navigate("SettingsDetails");
-  }
+  };
 
   return (
     <Welcome>
-      <Button title="Settings Details" onPress={onpresshandle} color="red" />
+      <Button title="Settings Details" onPress={onPressHandle} color="red" />
     </Welcome>
   );
-}
+};
 export default SettingsScreen;
