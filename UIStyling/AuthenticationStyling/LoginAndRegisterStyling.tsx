@@ -1,29 +1,31 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet,Dimensions } from "react-native";
 export const styles = StyleSheet.create({
     Container: {
         flex: 1,
-        paddingTop: "50%",
         alignItems: "center",
+
     },
     innercon: {
         flexDirection: "row",
         alignItems: "center",
+        //justifyContent:"center"
     },
     texti: {
-        padding: 5,
+        padding:5,
         marginLeft: 5,
-        borderWidth: 5,
-        borderColor: "lightblue",
-        opacity: 0.5,
+        borderWidth: 2,
+        borderColor: "black",
         fontSize: 20,
-        width: "50%",
+        width:'70%'
     },
     textuser: {
         marginRight: 5,
         fontSize: 20,
+        fontWeight:'bold'
     },
     buttonCon: {
         flex: 1,
         padding: 16,
+    
     },
 });

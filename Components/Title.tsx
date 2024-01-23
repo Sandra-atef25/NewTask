@@ -20,15 +20,12 @@ const styles = StyleSheet.create({
 
     Text:
     {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize:16,
         padding: 10,
-
-        color: 'black'
+        color: 'white'
     },
     Textid: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 16,
         color: 'blue'
     },
 })

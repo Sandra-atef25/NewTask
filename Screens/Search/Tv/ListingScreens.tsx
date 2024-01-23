@@ -1,8 +1,6 @@
 import { Text, View, FlatList, TouchableOpacity, TextInput, Image, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { series } from "../../../Data/mocks";
-import { seriesGenres } from "../../../Data/mocks";
 import { ItemData, TvProps } from '../../../Models/Tv';
 import styles from '../../../UIStyling/MoviesAndTVStyling/MoviesAndTVScreenStyling';
 import { fetchTVGenres, fetchTVList, fetchTVListFiltering, searchTV } from "../../../util/http";
@@ -12,52 +10,28 @@ type listofTvseries = {
     tvList: TvProps;
     onPress: () => void;
 };
-type itemProps = {
-    item: ItemData;
-    onPress: () => void;
-    backgroundColor: string;
-    textColor: string;
-};
 
-const Item = ({ item, onPress, backgroundColor, textColor }: itemProps) => (
-    <View style={styles.outerContainerofGenres}>
-        <TouchableOpacity onPress={onPress} style={[{ backgroundColor, borderWidth: 1, borderRadius: 20, margin: 5 }, styles.ViewContainer]}>
-            <View style={styles.TextContainer}>
-                {/*<Text style={[styles.Itemtext, { color: textColor }]}>ID: {item.id}</Text>*/}
-                <Text style={[{ color: textColor }, styles.Itemtext]}>{item.name}</Text>
-            </View>
-        </TouchableOpacity>
-    </View>
 
-);
+
 const TVSeriesList = ({ tvList, onPress }: listofTvseries) => {
     const BASE_URL_IMAGE = "https://image.tmdb.org/t/p/original";
     const posterPath: string = BASE_URL_IMAGE + tvList?.poster_path?.toString();
+    const title =tvList.name.length>19? tvList.name.slice(0,15)+'..':tvList.name;
+    
     return (
-        
-            <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
-                <View style={styles.TextMoviesContainer}>
-                    <Image source={{ uri: posterPath }} style={styles.image} />
-                
-          
-            <View style={styles.title}>
-                <Text style={styles.texttitle}>{tvList.name}</Text>
-            </View>
-            </View>
-            </TouchableOpacity>
-    );
-    /*return (
+
         <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
             <View style={styles.TextMoviesContainer}>
-                <Text style={styles.Itemtext}>
-                    Name Of TV Series:{"\n"}
-                    <Text style={[styles.Itemtext, { color: 'red' }]}>
-                        {tvList.name}
-                    </Text>
-                </Text>
+                <Image source={{ uri: posterPath }} style={styles.image} />
+
+
+                <View style={styles.title}>
+                    <Text style={styles.texttitle}>{title}</Text>
+                </View>
             </View>
         </TouchableOpacity>
-    );*/
+
+    );
 };
 const ListingTVScreen = ({ navigation }) => {
     //setting Search tesxt to see the matching movies in search text
@@ -68,9 +42,6 @@ const ListingTVScreen = ({ navigation }) => {
 
     //searched to see the text is searched (button searched is clicked on so we use another api)or not 
     const [searched, setSearched] = useState(false);
-
-    //set and fetch the tv genres from the given Api
-    const [fetchedTvGenres, setTvGenres] = useState<ItemData[]>([]);
 
     //set and fetch the series of tv from the given Api
     const [fetchedSeries, setFetchedSeries] = useState<TvProps[]>([]);
@@ -85,34 +56,6 @@ const ListingTVScreen = ({ navigation }) => {
     const [page, setPageNumber] = useState(1);
     const [isEnded, setIsEnded] = useState(false);
 
-    //filtering 
-    const [genreFilter, setGenreFilter] = useState<Number[]>([]);
-
-    const renderItem = ({ item }: { item: ItemData }) => {
-        const backgroundColor = genreFilter.includes(item.id) ? 'darkblue' : 'lightblue';
-        const color = genreFilter.includes(item.id) ? 'white' : 'black';
-
-        const pressHandle = (item: ItemData) => {
-            handleGenreFilter();
-            if(genreFilter.length==0){
-                setFetchedSeries([]);
-            }
-            setGenreFilter((prevList) => {
-                return prevList.includes(item.id) ? prevList.filter((id) => id !== item.id) : [...prevList, item.id]
-            }
-            );
-            
-        };
-
-        return (
-            <Item
-                item={item}
-                onPress={pressHandle.bind(this, item)}
-                backgroundColor={backgroundColor}
-                textColor={color}
-            />
-        );
-    };
     const renderSeries = ({ item: tvSeries }: { item: TvProps }) => {
         const pressHandle = () => {
             navigation.navigate("SeriesDetails", { SeriesDetails: tvSeries });
@@ -123,16 +66,6 @@ const ListingTVScreen = ({ navigation }) => {
             />
         );
     };
-
-    //http requests for getting Tv Genres////////
-    useEffect(() => {
-        async function getSeriesGenresList() {
-            const seriesGenresList = await fetchTVGenres();
-            setTvGenres(seriesGenresList);
-
-        }
-        getSeriesGenresList();
-    }, []);
     //http request for getting series list //
     async function getSeriesList() {
         setIsFetchingSeries(true);
@@ -150,26 +83,6 @@ const ListingTVScreen = ({ navigation }) => {
             })
         }
         setIsFetchingSeries(false);
-    }
-
-    //http request for new Series list by filtering//
-    async function getSeriesListFiltering() {
-        setIsFetchingSeries(true);
-        console.log(genreFilter);
-        const seriesListFiltered = await fetchTVListFiltering(page, genreFilter.join(","));
-        //console.log(moviesListFiltered);
-        if (seriesListFiltered.length == 0) {
-            setIsEnded(true);
-        }
-        else {
-            const filtered = seriesListFiltered.filter((newItem: TvProps) => !fetchedSeries.some((item: TvProps) => item.id === newItem.id));
-
-            setFetchedSeries((prevList) => {
-                return [...prevList, ...filtered];
-            })
-        }
-        setIsFetchingSeries(false);
-
     }
 
     ///http request for searching//////
@@ -209,22 +122,16 @@ const ListingTVScreen = ({ navigation }) => {
             }
 
         }
-        //in case of filtering
-        else if (genreFilter.length != 0) {
-            getSeriesListFiltering();
-        }
         //in case of nothing
         else {
             getSeriesList();
         }
-    }, [page, searchText, genreFilter]);
+    }, [page, searchText]);
 
     ////handling functions
 
     const handleSearch = () => {
         //reset the genre filter and enable searched state and reset the page number
-        
-        setGenreFilter([]);
         setPageNumber(1);
         setSearched(true);
     }
@@ -237,17 +144,7 @@ const ListingTVScreen = ({ navigation }) => {
         setSearched(false);
 
     }
-    const handleGenreFilter = () => {
-        // reset searchQuery and page number 
-       
-        setSearchText('');
-        setPageNumber(1);
-    }
-    const handleClearFilter = () => {
-        //reset genrefilter and page number
-        setGenreFilter([]);
-        setPageNumber(1);
-    }
+
     const handleEndReached = () => {
         setIsEnded(true);
         if (!isFetchingSeries) {
@@ -259,15 +156,18 @@ const ListingTVScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-           
-            <Button title="Search" onPress={handleSearch} />
+
+            <View style={styles.clearGenre}>
+                <Button title="Search" onPress={handleSearch} color='red' />
+
+            </View>
 
             {
                 searched &&
                 <View style={clicked ? styles.textClicked : styles.textUnclicked}>
                     <Ionicons name='search' size={20} color='navy' style={styles.icon}></Ionicons>
 
-                    <TextInput value={searchText} onChangeText={setSearchText} style={styles.textin}
+                    <TextInput value={searchText} onChangeText={setSearchText} style={styles.textin} placeholder='Search'
                         onFocus={() => setClicked(true)} onBlur={() => setClicked(false)} />
 
                     {
@@ -281,22 +181,6 @@ const ListingTVScreen = ({ navigation }) => {
                 </View>
             }
 
-            {
-                !searched && genreFilter &&
-                (<View>
-
-                    <Button title="Clear Filter" onPress={handleClearFilter} />
-                </View>)
-            }
-            {
-                !searched &&
-                <View style={styles.ItemContainer}>
-                    <FlatList<any> data={fetchedTvGenres} renderItem={renderItem} keyExtractor={item => item.id} horizontal={true} style={styles.ItemsContainers}
-                        showsHorizontalScrollIndicator={false}
-                        legacyImplementation={false} >
-                    </FlatList>
-                </View>
-            }
             <View style={styles.moviesContainer}>
                 {
                     !isEnded && isFetchingSeries && !noMatchingSeries && <LoadingOverlay />
@@ -318,7 +202,7 @@ const ListingTVScreen = ({ navigation }) => {
                     </View>
                 }
             </View>
-          
+
 
         </View>
     );

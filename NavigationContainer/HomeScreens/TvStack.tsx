@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import ListingTVScreen from "../../Screens/Feed/Tv/ListingScreens";
-import DetailsTVScreen from "../../Screens/Feed/Tv/DetailsScreen";
+import ListingTVScreen from "../../Screens/Home/Tv/ListingScreens";
+import DetailsTVScreen from "../../Screens/Home/Tv/DetailsScreen";
 const TVStack=() =>{
     const stack = createNativeStackNavigator();
     return (

@@ -4,6 +4,7 @@ import AccountStack from "./AccountStack";
 import HomeStack from "./HomeStack";
 import NotificationsStack from "./NotificationsStack";
 import FeedStack from "./FeedStack";
+import SearchStack from "./SearchStack";
 import SettingsStack from "./SettingsStack";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -15,11 +16,11 @@ const MainStackTwo=() =>{
     <Tab.Navigator
       initialRouteName="HomeScreens"
       screenOptions={{
-        headerStyle: { backgroundColor: "lightblue" },
-        tabBarStyle: { backgroundColor: "darkblue" },
+        headerStyle: { backgroundColor: "black" },
+        tabBarStyle: { backgroundColor: "black" },
       }}
     >
-      <Tab.Screen
+      {/*<Tab.Screen
         name="AccountScreens"
         component={AccountStack}
         options={{
@@ -41,7 +42,7 @@ const MainStackTwo=() =>{
           tabBarLabel: "Notifications",
           headerShown: false,
         }}
-      />
+      />*/}
       <Tab.Screen
         name="HomeScreens"
         component={HomeStack}
@@ -54,13 +55,24 @@ const MainStackTwo=() =>{
         }}
       />
       <Tab.Screen
-        name="FeedScreens"
+        name="SearchScreen"
+        component={SearchStack}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search" color={color} size={size} />
+          ),
+          tabBarLabel: "Search",
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="WishListScreen"
         component={FeedStack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="wifi" color={color} size={size} />
+            <Ionicons name="heart" color={color} size={size} />
           ),
-          tabBarLabel: "Feed",
+          tabBarLabel: "WishList",
           headerShown: false,
         }}
       />

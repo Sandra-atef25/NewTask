@@ -3,8 +3,8 @@ const styles=StyleSheet.create({
     Container:{
         flex:1,
         borderWidth:2,
-        margin:5,
-        backgroundColor:'pink',
+        backgroundColor:'black',
+        
 
     },
     NameofSelectedItem:{
@@ -17,7 +17,7 @@ const styles=StyleSheet.create({
     },
     Details:{
         justifyContent:'space-around',
-        margin:5,
+        marginBottom:5,
         
     }
 })

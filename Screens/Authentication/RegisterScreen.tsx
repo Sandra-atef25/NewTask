@@ -1,7 +1,8 @@
 import { TextInput, View, Button, Text, StyleSheet, Alert } from "react-native";
-import { useContext, useState } from "react";
+import  { useContext, useState } from "react";
 import { styles } from "../../UIStyling/AuthenticationStyling/LoginAndRegisterStyling";
 import { UserName } from "../../Components/UsernameContext/UserContext";
+import Gradient from "../../Components/Gradient";
 const RegisterScreen=({ navigation }) =>{
   //const navigation = useNavigation();
   const [enteredName, setEnteredName] = useState("");
@@ -25,7 +26,10 @@ const RegisterScreen=({ navigation }) =>{
     setEnteredName(enterName);
   };
   return (
+     
     <View style={styles.Container}>
+      <>
+    <Gradient>
       <View style={styles.innercon}>
         <Text style={styles.textuser}>Name:</Text>
         <TextInput
@@ -43,7 +47,9 @@ const RegisterScreen=({ navigation }) =>{
           <Button title="Back" onPress={pressGoBackLogin} color={"blue"} />
         </View>
       </View>
-    </View>
+      </Gradient>
+</>
+</View>
   );
 };
 export default RegisterScreen;

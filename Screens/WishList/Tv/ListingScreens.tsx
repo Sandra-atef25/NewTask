@@ -21,7 +21,7 @@ type itemProps = {
 
 const Item = ({ item, onPress, backgroundColor, textColor }: itemProps) => (
     <View style={styles.outerContainerofGenres}>
-        <TouchableOpacity onPress={onPress} style={[{ backgroundColor, borderWidth: 1, borderRadius: 20, margin: 5 }, styles.ViewContainer]}>
+        <TouchableOpacity onPress={onPress} style={[{ backgroundColor, borderWidth: 1, borderRadius: 5, margin: 5 }, styles.ViewContainer]}>
             <View style={styles.TextContainer}>
                 {/*<Text style={[styles.Itemtext, { color: textColor }]}>ID: {item.id}</Text>*/}
                 <Text style={[{ color: textColor }, styles.Itemtext]}>{item.name}</Text>
@@ -34,17 +34,17 @@ const TVSeriesList = ({ tvList, onPress }: listofTvseries) => {
     const BASE_URL_IMAGE = "https://image.tmdb.org/t/p/original";
     const posterPath: string = BASE_URL_IMAGE + tvList?.poster_path?.toString();
     return (
-        
-            <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
-                <View style={styles.TextMoviesContainer}>
-                    <Image source={{ uri: posterPath }} style={styles.image} />
-                
-          
-            <View style={styles.title}>
-                <Text style={styles.texttitle}>{tvList.name}</Text>
+
+        <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
+            <View style={styles.TextMoviesContainer}>
+                <Image source={{ uri: posterPath }} style={styles.image} />
+
+
+                <View style={styles.title}>
+                    <Text style={styles.texttitle}>{tvList.name}</Text>
+                </View>
             </View>
-            </View>
-            </TouchableOpacity>
+        </TouchableOpacity>
     );
     /*return (
         <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
@@ -94,14 +94,14 @@ const ListingTVScreen = ({ navigation }) => {
 
         const pressHandle = (item: ItemData) => {
             handleGenreFilter();
-            if(genreFilter.length==0){
+            if (genreFilter.length == 0) {
                 setFetchedSeries([]);
             }
             setGenreFilter((prevList) => {
                 return prevList.includes(item.id) ? prevList.filter((id) => id !== item.id) : [...prevList, item.id]
             }
             );
-            
+
         };
 
         return (
@@ -223,7 +223,7 @@ const ListingTVScreen = ({ navigation }) => {
 
     const handleSearch = () => {
         //reset the genre filter and enable searched state and reset the page number
-        
+
         setGenreFilter([]);
         setPageNumber(1);
         setSearched(true);
@@ -239,7 +239,7 @@ const ListingTVScreen = ({ navigation }) => {
     }
     const handleGenreFilter = () => {
         // reset searchQuery and page number 
-       
+
         setSearchText('');
         setPageNumber(1);
     }
@@ -259,7 +259,7 @@ const ListingTVScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-           
+
             <Button title="Search" onPress={handleSearch} />
 
             {
@@ -318,7 +318,6 @@ const ListingTVScreen = ({ navigation }) => {
                     </View>
                 }
             </View>
-          
 
         </View>
     );

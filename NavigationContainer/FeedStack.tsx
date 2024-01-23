@@ -12,19 +12,17 @@ const FeedStack=() =>{
 
   return (
       <MaterialTop.Navigator
-        initialRouteName="Movies"
-        screenOptions={{ tabBarStyle: { backgroundColor: "lightblue",} }}
+      screenOptions={{ tabBarStyle: { backgroundColor: "black",paddingTop:10} }}>
+      <MaterialTop.Screen name ="Movies" component={MoviesStack} options={{tabBarLabelStyle:{color:'white',fontWeight:'bold'},tabBarActiveTintColor:'white',tabBarScrollEnabled:false}}/>
+      <MaterialTop.Screen name = "TV" component={TVStack} options={{tabBarLabelStyle:{color:'white',fontWeight:'bold'},tabBarActiveTintColor:'white',tabBarScrollEnabled:false}}/>
 
-      >
         {/*<MaterialTop.Screen name="Feed" component={FeedScreen} />
         <MaterialTop.Screen
           name="FeedDetails"
           component={FeedDetails}
           options={{ tabBarLabel: "Feed Details" }}
         />*/}
-        <MaterialTop.Screen name ="Movies" component={MoviesStack} options={{tabBarScrollEnabled:false}}/>
-        <MaterialTop.Screen name = "TV" component={TVStack} options={{tabBarScrollEnabled:false}}/>
-
+       
       </MaterialTop.Navigator>
    
   );
