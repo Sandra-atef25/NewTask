@@ -8,16 +8,20 @@ import SearchStack from "./SearchStack";
 import SettingsStack from "./SettingsStack";
 
 import { Ionicons } from "@expo/vector-icons";
-
+import FavoritesContextProvider from "../Components/MoviesContext/favoritesContext";
+import WishListStack from "./WishListStack";
 const MainStackTwo=() =>{
   const Tab = createBottomTabNavigator();
 
   return (
-    <Tab.Navigator
+    <>
+    <FavoritesContextProvider>
+      <Tab.Navigator
       initialRouteName="HomeScreens"
       screenOptions={{
         headerStyle: { backgroundColor: "black" },
         tabBarStyle: { backgroundColor: "black" },
+        tabBarActiveTintColor:'red'
       }}
     >
       {/*<Tab.Screen
@@ -67,7 +71,7 @@ const MainStackTwo=() =>{
       />
       <Tab.Screen
         name="WishListScreen"
-        component={FeedStack}
+        component={WishListStack}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" color={color} size={size} />
@@ -88,6 +92,8 @@ const MainStackTwo=() =>{
         }}
       />
     </Tab.Navigator>
+    </FavoritesContextProvider>
+    </>
   );
 };
 export default MainStackTwo;

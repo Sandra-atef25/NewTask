@@ -7,7 +7,7 @@ const TVStack=() =>{
     return (
         <stack.Navigator initialRouteName="ListingSeries"screenOptions={{headerStyle:{backgroundColor:'black'}}}>
             <stack.Screen name="ListingSeries" component={ListingTVScreen} options={{ headerShown:false}} />
-            <stack.Screen name="SeriesDetails" component={DetailsTVScreen} />
+            <stack.Screen name="SeriesDetails" component={DetailsTVScreen} options={{ headerShown:false}} />
         </stack.Navigator>
 
     );
