@@ -6,53 +6,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    //justifyContent: 'center',
     backgroundColor: 'black',
   },
   moviesContainer: {
-    flex: 2,
+    //flex: 2,
     alignItems: 'center',
     width: deviceWidth,
   },
   ItemContainer: {
-    height: 50,
-    padding: 5,
-    justifyContent: 'space-evenly',
-    alignContent: "center",
+    height: '12%',
+    //justifyContent: 'space-evenly',
+    //alignItems: "center",
 
   },
   ItemsContainers: {
-    flex: 1,
-    flexDirection: 'row',
+   // flex: 1,
+    //flexDirection: 'row',
+    margin:5
   },
   Itemtext: {
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
+    padding:6,
   },
   ViewContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 5,
+    padding:5,
+  },
+  eveySingleItem:{
+    padding:5,
   },
   TextContainer: {
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    //alignItems: 'center',
+    //justifyContent: 'center',
 
   },
   TextMoviesContainer: {
-    //flex: 1,
-    //padding:5,
+   
     height: 250,
     width: deviceWidth / 2.15,
     backgroundColor:'rgba(52,52,52,0.8)',
-    alignItems: 'center',
-    //alignContent: 'center',
-    //justifyContent: 'center',
-    //backgroundColor: 'black',
-    borderWidth: 2,
+   // alignItems: 'center',
+    borderTopWidth: 2,
     borderRadius:10,
     opacity: 0.75
 
@@ -95,21 +95,21 @@ const styles = StyleSheet.create({
   },
   movieItem: {
     borderCurve: 15,
-    overflow: 'hidden',
+    //overflow: 'hidden',
     justifyContent:'center',
-    alignItems:'center'
+    //alignItems:'center',
+    
   
   },
   outerContainerofGenres: {
-    flexDirection: 'row',
-
+    //flexDirection: 'row',
+   
   },
   pressed: {
     opacity: 0.75,
   },
   clearGenre: {
     marginTop: 10,
-    marginBottom: 10,
   },
   noMatchingMoviesText: {
     fontSize: 20,
@@ -118,13 +118,16 @@ const styles = StyleSheet.create({
 
   },
   title: {
-    justifyContent:'center',
+    //justifyContent:'center',
+    //alignItems:'center',
+    marginLeft:5
   },
   texttitle:{
     color:'white',
     fontSize:16,
     fontWeight:'bold',
-    marginTop:5
+    marginTop:5,
+    
   }
 
 

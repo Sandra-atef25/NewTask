@@ -2,9 +2,7 @@ import { StyleSheet } from "react-native";
 const styles=StyleSheet.create({
     Container:{
         flex:1,
-        borderWidth:2,
         backgroundColor:'black',
-        
 
     },
     NameofSelectedItem:{
@@ -19,6 +17,17 @@ const styles=StyleSheet.create({
         justifyContent:'space-around',
         marginBottom:5,
         
+    },
+    headerButton:{
+        flexDirection:'row',
+        height:50,
+        margin:5,
+    
+    },
+    viewHeader:{
+        flexGrow:30,
+        marginRight:20,
+
     }
 })
 export default styles;

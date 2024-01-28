@@ -3,36 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { ItemData, TvProps } from '../../../Models/Tv';
 import styles from '../../../UIStyling/MoviesAndTVStyling/MoviesAndTVScreenStyling';
-import { fetchTVGenres, fetchTVList, fetchTVListFiltering, searchTV } from "../../../util/http";
+import { fetchTVList, searchTV } from "../../../util/http";
 import LoadingOverlay from "../../../UIStyling/MoviesAndTVStyling/LoadingOverlay";
-import Gradient from '../../../Components/Gradient';
-type listofTvseries = {
-    tvList: TvProps;
-    onPress: () => void;
-};
+import TVSeriesList from "../../../Components/TVSeries";
+import Listing from "../../../Components/Listing";
+import { nodeModuleNameResolver } from "typescript";
 
-
-
-const TVSeriesList = ({ tvList, onPress }: listofTvseries) => {
-    const BASE_URL_IMAGE = "https://image.tmdb.org/t/p/original";
-    const posterPath: string = BASE_URL_IMAGE + tvList?.poster_path?.toString();
-    const title =tvList.name.length>19? tvList.name.slice(0,15)+'..':tvList.name;
-    
-    return (
-
-        <TouchableOpacity onPress={onPress} style={styles.ViewContainer}>
-            <View style={styles.TextMoviesContainer}>
-                <Image source={{ uri: posterPath }} style={styles.image} />
-
-
-                <View style={styles.title}>
-                    <Text style={styles.texttitle}>{title}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-
-    );
-};
 const ListingTVScreen = ({ navigation }) => {
     //setting Search tesxt to see the matching movies in search text
     const [searchText, setSearchText] = useState<string>("");
@@ -72,16 +48,13 @@ const ListingTVScreen = ({ navigation }) => {
         const seriesList = await fetchTVList(page);
         console.log(seriesList);
         //if there is a no data in series list  so consider it the end of flat list
-        if (seriesList.length == 0) {
-            setIsEnded(true);
-        }
-        else {
-            const filtered = seriesList.filter((newItem: TvProps) => !fetchedSeries.some((item: TvProps) => item.id === newItem.id));
 
-            setFetchedSeries((prevList) => {
-                return [...prevList, ...filtered];
-            })
-        }
+        const filtered = seriesList.filter((newItem: TvProps) => !fetchedSeries.some((item: TvProps) => item.id === newItem.id));
+
+        setFetchedSeries((prevList) => {
+            return [...prevList, ...filtered];
+        })
+
         setIsFetchingSeries(false);
     }
 
@@ -155,11 +128,9 @@ const ListingTVScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-
+        <Listing fetchedData={fetchedSeries} handleEndReached={handleEndReached} isFetching={isFetchingSeries} noMatchingData={noMatchingSeries} renderData={renderSeries} title="No Matching Series" >
             <View style={styles.clearGenre}>
                 <Button title="Search" onPress={handleSearch} color='red' />
-
             </View>
 
             {
@@ -180,31 +151,7 @@ const ListingTVScreen = ({ navigation }) => {
                     }
                 </View>
             }
-
-            <View style={styles.moviesContainer}>
-                {
-                    !isEnded && isFetchingSeries && !noMatchingSeries && <LoadingOverlay />
-                }
-                {
-                    !isFetchingSeries && !noMatchingSeries &&
-
-                    <FlatList<any> data={fetchedSeries} renderItem={renderSeries} keyExtractor={(item) => item.id} numColumns={2}
-                        onEndReached={handleEndReached} ListFooterComponent={
-                            isFetchingSeries && isEnded ? <LoadingOverlay /> : null
-                        } ></FlatList>
-
-
-                }
-                {
-                    !isFetchingSeries && noMatchingSeries &&
-                    <View>
-                        <Text> No Matching TV Series</Text>
-                    </View>
-                }
-            </View>
-
-
-        </View>
+        </Listing>
     );
 };
 export default ListingTVScreen;

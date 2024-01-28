@@ -9,13 +9,15 @@ function DetailsTVScreen({navigation,route}){
     const BASE_URL_IMAGE="https://image.tmdb.org/t/p/original";
     const TvSeriesDetails:TvProps=route?.params?.SeriesDetails;
     const posterPathNew:string=BASE_URL_IMAGE+TvSeriesDetails.poster_path.toString();
-    
     const [fetchedGenres,setFetchedGenres]=useState<ItemData[]>();
+
     async function fetchingGenres() {
         
             const fetchedTvGenres=   await fetchTVGenres();
             setFetchedGenres(fetchedTvGenres);
     } 
+    
+
     useEffect(()=>{
         fetchingGenres();
         navigation.setOptions({ 

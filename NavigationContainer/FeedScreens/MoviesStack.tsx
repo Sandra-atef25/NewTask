@@ -9,7 +9,7 @@ const MoviesStack=() =>{
     return (
             <stack.Navigator initialRouteName="ListingMovies" screenOptions={{headerStyle:{backgroundColor:'black'}}}>
             <stack.Screen name="ListingMovies" component={FavoritesScreen} options={{ headerShown:false}} />
-            <stack.Screen name="TheMovieSelected" component={DetailsMoviesScreen} />
+            <stack.Screen name="TheMovieSelected" component={DetailsMoviesScreen} options={{ headerShown:false}}  />
         </stack.Navigator>
         
     );
